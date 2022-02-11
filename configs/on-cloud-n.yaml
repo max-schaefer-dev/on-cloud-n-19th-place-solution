@@ -15,4 +15,8 @@ gpu: True
 train_transform: train_transform
 val_transform: None
 LGJ: False
-dev_run: True
+debug: True
+all_data: False
+ds_path: 'data'
+selected_folds: 4
+selected_bands: ['B02','B03','B04','B08']

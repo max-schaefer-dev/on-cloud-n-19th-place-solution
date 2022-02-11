@@ -10,7 +10,6 @@ import torch.nn.functional as F
 from utils.schedulers import get_lr_scheduler
 from utils.optimizers import get_optimizer
 from utils.losses import get_loss
-from utils.optimizers import JaccardIndex
 
 from cloud_dataset import CloudDataset
 from losses import intersection_over_union

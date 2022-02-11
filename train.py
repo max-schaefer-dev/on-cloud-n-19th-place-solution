@@ -3,19 +3,27 @@ from cloud_model import CloudModel
 from pytorch_lightning.utilities.seed import seed_everything
 
 import argparse
-from utils.config import dict2cfg
+import yaml
+import os
+import pandas as pd
+
+from utils.config import dict2cfg, cfg2dict
 from dataset.split import create_folds
 
-def train():
+def train(CFG):
+
+    cfg_dict = cfg2dict(CFG)
+
+    print(type(cfg_dict))
     cloud_model = CloudModel(
-        bands=BANDS,
+        bands=CFG.selected_bands,
         x_train=train_X,
         y_train=train_y,
         x_val=val_X,
         y_val=val_y,
-        hparams=cfg
+        hparams=cfg_dict
     )
-    trainer = prepare_model(cfg)
+    trainer = prepare_model(CFG)
 
     trainer.fit(model=cloud_model)
 
@@ -39,7 +47,7 @@ if __name__ == '__main__':
     CFG_PATH = opt.cfg
     cfg_dict = yaml.load(open(CFG_PATH, 'r'), Loader=yaml.FullLoader)
     CFG      = dict2cfg(cfg_dict) # dict to class
-    # print('config:', cfg)
+    print('config:', cfg_dict)
 
     # OVERWRITE
     if opt.debug is not None:
@@ -70,9 +78,6 @@ if __name__ == '__main__':
     if CFG.all_data:
         CFG.selected_folds = [0]
     
-    # MINIMUM SAMPLES FOR DEBUG
-    CFG.min_samples = CFG.batch_size * CFG.replicas * 2
-    
     # SEEDING
     seed_everything(seed=CFG.seed)
     
@@ -85,39 +90,44 @@ if __name__ == '__main__':
     print('> DS_PATH:',CFG.ds_path)
     
     # META DATA
-    ## Train Data
-    df = pd.read_csv(F'{CFG.ds_path}/train.csv')
-    df['image_path'] = CFG.ds_path + '/train_images/' + df.video_id + '-' + df.time.map(lambda x: f'{x:03d}') + '.png'
-    # print(df.head(2))
+    # ## Train Data
+    df = pd.read_csv(F'{CFG.ds_path}/train_metadata_cleaned_kfold.csv')
+    df['B02_path'] = CFG.ds_path + '/train_features/' + df.chip_id + '/B02.tif'
+    df['B03_path'] = CFG.ds_path + '/train_features/' + df.chip_id + '/B03.tif'
+    df['B04_path'] = CFG.ds_path + '/train_features/' + df.chip_id + '/B04.tif'
+    df['B08_path'] = CFG.ds_path + '/train_features/' + df.chip_id + '/B08.tif'
+    df['label_path'] = CFG.ds_path + '/train_labels/' + df.chip_id + '.tif'
+    # df['image_path'] = CFG.ds_path + '/train_images/' + df.video_id + '-' + df.time.map(lambda x: f'{x:03d}') + '.png'
+    # # print(df.head(2))
 
     # CHECK FILE FROM DS_PATH
-    assert os.path.isfile(df.image_path.iloc[0])
+    assert os.path.isfile(df.B02_path.iloc[0])
     print('> DS_PATH: OKAY')
     
-    # CLEAN DATA
-    if CFG.clean_data:
-        df = clean_data(df)
+    # # CLEAN DATA
+    # if CFG.clean_data:
+    #     df = clean_data(df)
     
     # DATA SPLIT
-    df = create_folds(df, CFG=CFG)
+    train_X, train_y, val_X, val_y = create_folds(df, CFG=CFG)
 
     # CHECK OVERLAP IN FOLDS
-    overlap = set(df.query("fold==0").site_id.unique()).intersection(set(df.query("fold!=0").site_id.unique()))
-    assert len(overlap)==0
+    # overlap = set(df.query("fold==0").site_id.unique()).intersection(set(df.query("fold!=0").site_id.unique()))
+    # assert len(overlap)==0
     
     # PLOT SOME DATA
-    fold = 0
-    fold_df = df.query('fold==@fold')[100:200]
-    paths  = fold_df.image_path.tolist()
-    labels = fold_df[CFG.target_col].values
-    ds     = build_dataset(paths, labels, cache=False, batch_size=CFG.batch_size*CFG.replicas,
-                           repeat=True, shuffle=True, augment=True, CFG=CFG)
-    ds = ds.unbatch().batch(20)
-    batch = next(iter(ds))
-    plot_batch(batch, 5, output_dir=CFG.output_dir)
+    # fold = 0
+    # fold_df = df.query('fold==@fold')[100:200]
+    # paths  = fold_df.image_path.tolist()
+    # labels = fold_df[CFG.target_col].values
+    # ds     = build_dataset(paths, labels, cache=False, batch_size=CFG.batch_size*CFG.replicas,
+    #                        repeat=True, shuffle=True, augment=True, CFG=CFG)
+    # ds = ds.unbatch().batch(20)
+    # batch = next(iter(ds))
+    # plot_batch(batch, 5, output_dir=CFG.output_dir)
     
     # PLOT LR SCHEDULE
-    get_lr_scheduler(CFG.batch_size*CFG.replicas, CFG=CFG, plot=True)
+    # get_lr_scheduler(CFG.batch_size*CFG.replicas, CFG=CFG, plot=True)
     # Training
     print('> TRAINING:')
     train(CFG)
