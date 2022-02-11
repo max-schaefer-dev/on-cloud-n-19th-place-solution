@@ -1,0 +1,17 @@
+name: condaenv
+dependencies:
+  - torch=1.10.0+cu111
+  - numpy=1.19.5
+  - pandas=1.2.5
+  - torchmetrics=0.7.1
+  - pytorch-lightning=1.5.9
+  - loguru=0.6.0
+  - tqdm=4.62.3
+  - typer=0.4.0
+  - rasterio=1.2.10
+  - albumentations=1.1.0
+  - wandb=0.12.10 (optional)
+  - pip:
+    - segmentation-models-pytorch=0.2.1
+    - opencv-python=4.5.5.62
+    - Pillow=7.1.2
