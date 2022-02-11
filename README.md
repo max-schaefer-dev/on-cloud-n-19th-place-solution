@@ -1,6 +1,6 @@
 # On-Cloud-N: Cloud Detection Challange
 
-Picture of challange
+!Work in Progress!
 
 ## Hardware requirements
 - Run on Google Colab Pro

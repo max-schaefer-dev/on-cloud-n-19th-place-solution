@@ -7,12 +7,13 @@ import torch
 import torchmetrics
 import torch.nn.functional as F
 
-try:
-    from cloud_dataset import CloudDataset
-    from losses import intersection_over_union
-except ImportError:
-    from benchmark_src.cloud_dataset import CloudDataset
-    from benchmark_src.losses import intersection_over_union
+from utils.schedulers import get_lr_scheduler
+from utils.optimizers import get_optimizer
+from utils.losses import get_loss
+from utils.optimizers import JaccardIndex
+
+from cloud_dataset import CloudDataset
+from losses import intersection_over_union
 
 
 class CloudModel(pl.LightningModule):
@@ -117,7 +118,8 @@ class CloudModel(pl.LightningModule):
         preds = self.forward(x)
 
         # Log batch loss
-        loss = torch.nn.CrossEntropyLoss(reduction="none")(preds, y).mean()
+        loss = get_loss(self.hparams.loss)
+        loss = loss()(preds, y).mean()
 
         self.log(
             "loss",
@@ -159,7 +161,8 @@ class CloudModel(pl.LightningModule):
         preds = self.forward(x)
 
         # Log batch loss
-        loss = torch.nn.CrossEntropyLoss(reduction="none")(preds, y.long()).mean()
+        loss = get_loss(self.hparams.loss)
+        loss = loss()(preds, y.long()).mean()
         self.log(
             "val_loss",
             loss,
@@ -173,12 +176,13 @@ class CloudModel(pl.LightningModule):
         preds = (preds > 0.5) * 1  # convert to int
 
         # Log batch IOU
-        iou_loss = IoULoss(preds, y)
+        jaccardIndex = JaccardIndex(preds, y)
+
         self.log(
-            "iou_loss", iou_loss, on_step=False, on_epoch=True, prog_bar=True, logger=True
+            "jaccardIndex", jaccardIndex, on_step=False, on_epoch=True, prog_bar=True, logger=True
         )
 
-        return iou_loss
+        return jaccardIndex
 
 
     def train_dataloader(self):
@@ -202,8 +206,11 @@ class CloudModel(pl.LightningModule):
         )
 
     def configure_optimizers(self):
-        opt = torch.optim.Adam(self.model.parameters(), lr=self.learning_rate)
-        sch = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=10)
+        opt = get_optimizer(self.model.parameters(),
+                            self.hparams.optimizer,
+                            self.hparams.lr
+                            )
+        sch = get_lr_scheduler(opt, self.hparam.scheduler)
         return [opt], [sch]
 
     ## Convenience Methods ##
@@ -220,13 +227,15 @@ class CloudModel(pl.LightningModule):
                 in_channels=4,
                 classes=self.classes
             )
-        if self.decoder == 'fpn':
+        elif self.decoder == 'fpn':
             unet_model = smp.FPN(
                 encoder_name=self.backbone,
                 encoder_weights=self.weights,
                 in_channels=4,
                 classes=self.classes
             )
+        else:
+            raise ValueError("Wrong decoder name")
 
         if self.gpu:
             unet_model.cuda()
