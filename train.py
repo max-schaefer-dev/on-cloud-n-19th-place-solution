@@ -6,15 +6,24 @@ import argparse
 import yaml
 import os
 import pandas as pd
+import albumentations as A
 
 from utils.config import dict2cfg, cfg2dict
+from utils.prepare_trainer import prepare_trainer
 from dataset.split import create_folds
 
 def train(CFG):
 
     cfg_dict = cfg2dict(CFG)
 
-    print(type(cfg_dict))
+    train_transform = A.Compose([
+        A.HorizontalFlip(p=0.5),
+        A.VerticalFlip(p=0.5),
+    ])
+
+    cfg_dict['train_transform'] = train_transform
+    cfg_dict['val_transform'] = None
+
     cloud_model = CloudModel(
         bands=CFG.selected_bands,
         x_train=train_X,
@@ -23,7 +32,7 @@ def train(CFG):
         y_val=val_y,
         hparams=cfg_dict
     )
-    trainer = prepare_model(CFG)
+    trainer = prepare_trainer(CFG)
 
     trainer.fit(model=cloud_model)
 

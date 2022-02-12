@@ -1,11 +1,9 @@
 import torchmetrics
+import numpy as np
 
 # METRIC
-def JaccardIndex(n_classes):
-    metric = torchmetrics.JaccardIndex(classes=n_classes)
-    return metric
 
-def intersection_over_union(pred, true):
+def JaccardIndex(pred, true):
     """
     Calculates intersection and union for a batch of images.
 

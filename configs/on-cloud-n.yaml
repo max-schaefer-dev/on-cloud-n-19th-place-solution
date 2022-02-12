@@ -9,13 +9,13 @@ batch_size: 16
 epochs: 31
 classes: 2
 loss: CE
-activation: Adam
+optimizer: Adam
 scheduler: cosine
 gpu: True
 train_transform: train_transform
 val_transform: None
 LGJ: False
-debug: True
+debug: False
 all_data: False
 ds_path: 'data'
 selected_folds: 4

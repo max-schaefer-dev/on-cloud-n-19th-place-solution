@@ -115,8 +115,8 @@ class CloudDataset(torch.utils.data.Dataset):
     def __init__(
         self,
         x_paths: pd.DataFrame,
-        bands: List[str],
         y_paths: Optional[pd.DataFrame] = None,
+        bands: List[str] = ['B02','B03','B04','B08'],
         transforms: Optional[list] = None,
         LGJ: bool = False,
     ):
@@ -143,7 +143,6 @@ class CloudDataset(torch.utils.data.Dataset):
     def __getitem__(self, idx: int):
         # Loads an n-channel image from a chip-level dataframe
         img = self.data.loc[idx]
-        img_class = self.data.loc[idx]['class']
         band_arrs = []
         for band in self.bands:
             with rasterio.open(img[f"{band}_path"]) as b:

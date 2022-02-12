@@ -6,8 +6,8 @@ def prepare_trainer(CFG):
     
     trainer = pl.Trainer(
         gpus=1,
-        fast_dev_run=CFG.dev_run,
-        callbacks=get_callbacks(),
+        fast_dev_run=CFG.debug,
+        callbacks=get_callbacks(CFG),
         max_epochs=CFG.epochs
     )
 

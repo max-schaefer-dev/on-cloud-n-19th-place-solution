@@ -10,10 +10,9 @@ import torch.nn.functional as F
 from utils.schedulers import get_lr_scheduler
 from utils.optimizers import get_optimizer
 from utils.losses import get_loss
+from utils.metrics import JaccardIndex
 
-from cloud_dataset import CloudDataset
-from losses import intersection_over_union
-
+from dataset.cloud_dataset import CloudDataset
 
 class CloudModel(pl.LightningModule):
     def __init__(
@@ -118,7 +117,7 @@ class CloudModel(pl.LightningModule):
 
         # Log batch loss
         loss = get_loss(self.hparams.loss)
-        loss = loss()(preds, y).mean()
+        loss = loss(preds, y).mean()
 
         self.log(
             "loss",
@@ -161,7 +160,7 @@ class CloudModel(pl.LightningModule):
 
         # Log batch loss
         loss = get_loss(self.hparams.loss)
-        loss = loss()(preds, y.long()).mean()
+        loss = loss(preds, y.long()).mean()
         self.log(
             "val_loss",
             loss,
@@ -188,7 +187,7 @@ class CloudModel(pl.LightningModule):
         # DataLoader class for training
         return torch.utils.data.DataLoader(
             self.train_dataset,
-            batch_size=self.batch_size,
+            batch_size=self.hparams.batch_size,
             num_workers=self.num_workers,
             shuffle=True,
             pin_memory=True,
@@ -198,7 +197,7 @@ class CloudModel(pl.LightningModule):
         # DataLoader class for validation
         return torch.utils.data.DataLoader(
             self.val_dataset,
-            batch_size=self.batch_size,
+            batch_size=self.hparams.batch_size,
             num_workers=0,
             shuffle=False,
             pin_memory=True,
@@ -206,10 +205,10 @@ class CloudModel(pl.LightningModule):
 
     def configure_optimizers(self):
         opt = get_optimizer(self.model.parameters(),
-                            self.hparams.optimizer,
-                            self.hparams.lr
+                            self.hparams.lr,
+                            self.hparams.optimizer
                             )
-        sch = get_lr_scheduler(opt, self.hparam.scheduler)
+        sch = get_lr_scheduler(opt, self.hparams.scheduler)
         return [opt], [sch]
 
     ## Convenience Methods ##
