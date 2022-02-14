@@ -10,8 +10,10 @@ import albumentations as A
 import torch
 
 from utils.config import dict2cfg, cfg2dict
+from utils.prepare_model import prepare_model
 from utils.prepare_trainer import prepare_trainer
 from utils.schedulers import save_lr_scheduler_as_jpg
+from dataset.augment import prepare_train_augmentation, prepare_val_augmentation
 from dataset.processing import update_filepaths
 from dataset.split import create_folds
 
@@ -19,25 +21,18 @@ def train(CFG):
 
     cfg_dict = cfg2dict(CFG)
 
-    train_transform = A.Compose([
-        A.HorizontalFlip(p=0.5),
-        A.VerticalFlip(p=0.5),
-    ])
+    # define augmentations
+    cfg_dict['train_transform'] = prepare_train_augmentation()
+    cfg_dict['val_transform'] = prepare_val_augmentation()
 
-    cfg_dict['train_transform'] = train_transform
-    cfg_dict['val_transform'] = None
+    cloud_model = prepare_model(CFG, df)
 
-    cloud_model = CloudModel(
-        bands=CFG.selected_bands,
-        x_train=train_X,
-        y_train=train_y,
-        x_val=val_X,
-        y_val=val_y,
-        hparams=cfg_dict
-    )
     trainer = prepare_trainer(CFG)
-
     trainer.fit(model=cloud_model)
+
+    # save model weights after last epoch
+    model_weight_path = f'{CFG.output_dir}/{CFG.model_name}.pt'
+    torch.save(cloud_model.state_dict(), model_weight_path)
 
 
 if __name__ == '__main__':
@@ -90,9 +85,8 @@ if __name__ == '__main__':
         CFG.selected_folds = opt.selected_folds
     if opt.all_data:
         CFG.all_data = opt.all_data
-    if CFG.all_data:
-        CFG.selected_folds = [0]
-    
+    # if CFG.all_data:
+        # CFG.selected_folds = [0]
     
     # DS_PATH
     if opt.ds_path is not None:
@@ -105,15 +99,20 @@ if __name__ == '__main__':
     # META DATA
     # ## Train Data
     df = pd.read_csv(F'{CFG.ds_path}/train_metadata_cleaned_kfold.csv')
-    df = update_filepaths(df, CFG)
+    df = update_filepaths(df, CFG)[:1000]
 
     # CHECK FILE FROM DS_PATH
     assert os.path.isfile(df.B02_path.iloc[0])
     print('> DS_PATH: OKAY')
     
     # DATA SPLIT
-    train_X, train_y, val_X, val_y = create_folds(df, CFG=CFG)
-    print(f'> SELECTED FOLD {CFG.selected_folds}: {len(train_X)} train / {len(val_X)} val. split. {round(len(val_X)/len(df),2)}%')
+    print(CFG.all_data)
+    if CFG.all_data:
+        train_X, train_y = create_folds(df, CFG=CFG)
+        print(f'> FULL DATASET IS USED FOR TRAINING: {len(train_X)} samples')
+    else:
+        train_X, train_y, val_X, val_y = create_folds(df, CFG=CFG)
+        print(f'> SELECTED FOLD {CFG.selected_folds}: {len(train_X)} train / {len(val_X)} val. split. {round(len(val_X)/len(df),2)}%')
     
     # PLOT SOME DATA
     # fold = 0
@@ -131,4 +130,4 @@ if __name__ == '__main__':
 
     # Training
     print('> TRAINING:')
-    # train(CFG)
+    train(CFG)

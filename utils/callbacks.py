@@ -14,6 +14,9 @@ def get_callbacks(CFG):
         verbose=True,
     )
 
-    callbacks = [lr_monitor, checkpoint_callback, early_stopping_callback]
-    
+    if CFG.all_data:
+        callbacks = [lr_monitor]
+    else:
+        callbacks = [lr_monitor, checkpoint_callback, early_stopping_callback]
+
     return callbacks

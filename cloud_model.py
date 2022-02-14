@@ -71,6 +71,7 @@ class CloudModel(pl.LightningModule):
             bands=self.bands,
             transforms=self.train_transform,
         )
+
         self.val_dataset = CloudDataset(
             x_paths=x_val,
             y_paths=y_val,
