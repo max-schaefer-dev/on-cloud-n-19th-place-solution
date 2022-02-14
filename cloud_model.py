@@ -52,7 +52,7 @@ class CloudModel(pl.LightningModule):
         self.bands = bands
 
         # optional modeling params
-        self.backbone = self.hparams.get('backbone', 'resnet34') #resnet34
+        self.encoder = self.hparams.get('encoder', 'resnet34') #resnet34
         self.decoder = self.hparams.get('decoder', 'unet')
         self.weights = self.hparams.get('weights', 'imagenet')
         self.learning_rate = self.hparams.get('lr', 1e-3)
@@ -217,17 +217,16 @@ class CloudModel(pl.LightningModule):
         # Instantiate U-Net model
         aux_params = {
         }
-
         if self.decoder == 'unet':
             unet_model = smp.Unet(
-                encoder_name=self.backbone,
+                encoder_name=self.encoder,
                 encoder_weights=self.weights,
                 in_channels=4,
                 classes=self.classes
             )
         elif self.decoder == 'fpn':
             unet_model = smp.FPN(
-                encoder_name=self.backbone,
+                encoder_name=self.encoder,
                 encoder_weights=self.weights,
                 in_channels=4,
                 classes=self.classes

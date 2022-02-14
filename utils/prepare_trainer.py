@@ -8,7 +8,8 @@ def prepare_trainer(CFG):
         gpus=1,
         fast_dev_run=CFG.debug,
         callbacks=get_callbacks(CFG),
-        max_epochs=CFG.epochs
+        max_epochs=CFG.epochs,
+        default_root_dir=CFG.output_dir
     )
 
     return trainer

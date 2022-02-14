@@ -13,5 +13,6 @@ dependencies:
   - wandb=0.12.10 (optional)
   - pip:
     - segmentation-models-pytorch=0.2.1
+    - matplotlib==3.2.2
     - opencv-python=4.5.5.62
     - Pillow=7.1.2

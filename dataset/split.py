@@ -19,7 +19,4 @@ def create_folds(df, CFG=None):
     train = df.loc[df['fold'] != selected_fold].reset_index(drop=True)
     train_X = train[feature_cols].copy()
     train_y = train[["chip_id", "label_path"]].copy()
-
-    print(f'selected fold {selected_fold}: {len(train_X)} train / {len(val_X)} val. split. {round(len(val_X)/len(df),2)}%')
-
     return (train_X, train_y, val_X, val_y)

@@ -1,6 +1,7 @@
 torch==1.10.0+cu111
 numpy==1.19.5
 pandas==1.2.5
+matplotlib==3.2.2
 torchmetrics==0.7.1
 pytorch-lightning==1.5.9
 loguru==0.6.0

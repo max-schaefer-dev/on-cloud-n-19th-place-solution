@@ -7,9 +7,12 @@ import yaml
 import os
 import pandas as pd
 import albumentations as A
+import torch
 
 from utils.config import dict2cfg, cfg2dict
 from utils.prepare_trainer import prepare_trainer
+from utils.schedulers import save_lr_scheduler_as_jpg
+from dataset.processing import update_filepaths
 from dataset.split import create_folds
 
 def train(CFG):
@@ -56,7 +59,10 @@ if __name__ == '__main__':
     CFG_PATH = opt.cfg
     cfg_dict = yaml.load(open(CFG_PATH, 'r'), Loader=yaml.FullLoader)
     CFG      = dict2cfg(cfg_dict) # dict to class
-    print('config:', cfg_dict)
+    print('> CONFIG:', cfg_dict)
+
+    # SEEDING
+    seed_everything(seed=CFG.seed)
 
     # OVERWRITE
     if opt.debug is not None:
@@ -87,8 +93,6 @@ if __name__ == '__main__':
     if CFG.all_data:
         CFG.selected_folds = [0]
     
-    # SEEDING
-    seed_everything(seed=CFG.seed)
     
     # DS_PATH
     if opt.ds_path is not None:
@@ -101,28 +105,15 @@ if __name__ == '__main__':
     # META DATA
     # ## Train Data
     df = pd.read_csv(F'{CFG.ds_path}/train_metadata_cleaned_kfold.csv')
-    df['B02_path'] = CFG.ds_path + '/train_features/' + df.chip_id + '/B02.tif'
-    df['B03_path'] = CFG.ds_path + '/train_features/' + df.chip_id + '/B03.tif'
-    df['B04_path'] = CFG.ds_path + '/train_features/' + df.chip_id + '/B04.tif'
-    df['B08_path'] = CFG.ds_path + '/train_features/' + df.chip_id + '/B08.tif'
-    df['label_path'] = CFG.ds_path + '/train_labels/' + df.chip_id + '.tif'
-    # df['image_path'] = CFG.ds_path + '/train_images/' + df.video_id + '-' + df.time.map(lambda x: f'{x:03d}') + '.png'
-    # # print(df.head(2))
+    df = update_filepaths(df, CFG)
 
     # CHECK FILE FROM DS_PATH
     assert os.path.isfile(df.B02_path.iloc[0])
     print('> DS_PATH: OKAY')
     
-    # # CLEAN DATA
-    # if CFG.clean_data:
-    #     df = clean_data(df)
-    
     # DATA SPLIT
     train_X, train_y, val_X, val_y = create_folds(df, CFG=CFG)
-
-    # CHECK OVERLAP IN FOLDS
-    # overlap = set(df.query("fold==0").site_id.unique()).intersection(set(df.query("fold!=0").site_id.unique()))
-    # assert len(overlap)==0
+    print(f'> SELECTED FOLD {CFG.selected_folds}: {len(train_X)} train / {len(val_X)} val. split. {round(len(val_X)/len(df),2)}%')
     
     # PLOT SOME DATA
     # fold = 0
@@ -135,8 +126,9 @@ if __name__ == '__main__':
     # batch = next(iter(ds))
     # plot_batch(batch, 5, output_dir=CFG.output_dir)
     
-    # PLOT LR SCHEDULE
-    # get_lr_scheduler(CFG.batch_size*CFG.replicas, CFG=CFG, plot=True)
+    # SAVE LR SCHEDULE AS JPG IN MODEL FOLDER
+    save_lr_scheduler_as_jpg(CFG.epochs, CFG.output_dir)
+
     # Training
     print('> TRAINING:')
-    train(CFG)
+    # train(CFG)
