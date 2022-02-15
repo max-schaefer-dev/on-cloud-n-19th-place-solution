@@ -12,8 +12,7 @@ loss: CE
 optimizer: Adam
 scheduler: cosine
 gpu: True
-LGJ: False
-debug: False
+fast_dev_run: 0
 all_data: 1
 ds_path: 'data'
 selected_folds: 4
