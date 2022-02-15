@@ -16,26 +16,20 @@ def prepare_model(CFG, df):
 
     cfg_dict = cfg2dict(CFG)
 
-    if not CFG.all_data:
-        train_X, train_y, val_X, val_y = create_folds(df, CFG=CFG)
-    else:
+    if CFG.all_data:
         train_X, train_y = create_folds(df, CFG=CFG)
-
-    if not CFG.all_data:
-        cloud_model = CloudModel(
-            bands=CFG.selected_bands,
-            x_train=train_X,
-            y_train=train_y,
-            x_val=val_X,
-            y_val=val_y,
-            hparams=cfg_dict
-        )
+        val_X, val_y = None, None
     else:
-        cloud_model = CloudModel(
-            bands=CFG.selected_bands,
-            x_train=train_X,
-            y_train=train_y,
-            hparams=cfg_dict
-        )
+        train_X, train_y, val_X, val_y = create_folds(df, CFG=CFG)
+        
+
+    cloud_model = CloudModel(
+        bands=CFG.selected_bands,
+        x_train=train_X,
+        y_train=train_y,
+        x_val=val_X,
+        y_val=val_y,
+        hparams=cfg_dict
+    )
 
     return cloud_model

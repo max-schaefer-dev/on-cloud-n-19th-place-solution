@@ -10,23 +10,16 @@ def prepare_trainer(CFG):
     Returns:
         iou (pl.Trainer): pytorch lightning Trainer
     """
+
+    limit_val_batches = 0 if CFG.all_data else 1.0
         
-    if CFG.all_data:
-        trainer = pl.Trainer(
-            gpus=1,
-            fast_dev_run=CFG.debug,
-            callbacks=get_callbacks(CFG),
-            max_epochs=CFG.epochs,
-            limit_val_batches=0,
-            default_root_dir=CFG.output_dir
-        )
-    else:
-        trainer = pl.Trainer(
-            gpus=1,
-            fast_dev_run=CFG.debug,
-            callbacks=get_callbacks(CFG),
-            max_epochs=CFG.epochs,
-            default_root_dir=CFG.output_dir
-        )
+    trainer = pl.Trainer(
+        gpus=1,
+        fast_dev_run=CFG.fast_dev_run,
+        callbacks=get_callbacks(CFG),
+        max_epochs=CFG.epochs,
+        limit_val_batches=limit_val_batches,
+        default_root_dir=CFG.output_dir
+    )
 
     return trainer
