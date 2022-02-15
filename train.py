@@ -12,7 +12,7 @@ import torch
 from utils.config import dict2cfg, cfg2dict
 from utils.prepare_model import prepare_model
 from utils.prepare_trainer import prepare_trainer
-from utils.schedulers import save_lr_scheduler_as_jpg
+from utils.visualize import save_lr_scheduler_as_jpg, save_batch_as_jpg
 from dataset.augment import prepare_train_augmentation, prepare_val_augmentation
 from dataset.processing import update_filepaths
 from dataset.split import create_folds
@@ -38,7 +38,7 @@ def train(CFG):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--cfg', type=str, default='./configs/on-cloud-n.yaml', help='config file')
-    parser.add_argument('--debug', type=int, default=None, help='process only small portion in debug mode')
+    parser.add_argument('--fast-dev-run', type=int, default=None, help='process only small portion in debug mode')
     parser.add_argument('--model-name', type=str, default=None, help='name of the model')
     parser.add_argument('--img-size', type=int, nargs='+', default=None, help='image size: H x W')
     parser.add_argument('--batch-size', type=int, default=None, help='batch_size for the model')
@@ -60,9 +60,6 @@ if __name__ == '__main__':
     seed_everything(seed=CFG.seed)
 
     # OVERWRITE
-    if opt.debug is not None:
-        CFG.debug = opt.debug
-    print('> DEBUG MODE:', bool(CFG.debug))
     if opt.model_name:
         CFG.model_name = opt.model_name
     if opt.img_size:
@@ -83,11 +80,17 @@ if __name__ == '__main__':
     CFG.output_dir = output_dir
     if opt.selected_folds:
         CFG.selected_folds = opt.selected_folds
-    if opt.all_data:
+    if opt.all_data is not None:
         CFG.all_data = opt.all_data
-    # if CFG.all_data:
-        # CFG.selected_folds = [0]
-    
+
+    if opt.fast_dev_run is not None:
+        CFG.fast_dev_run = opt.fast_dev_run
+    if CFG.fast_dev_run and CFG.all_data:
+        CFG.all_data = 0
+        print('> DEBUG MODE:', f'{bool(CFG.fast_dev_run)}. CFG.all_data set to 0',)
+    else:
+        print('> DEBUG MODE:', bool(CFG.fast_dev_run))
+
     # DS_PATH
     if opt.ds_path is not None:
         CFG.ds_path = opt.ds_path
@@ -97,16 +100,14 @@ if __name__ == '__main__':
     print('> DS_PATH:',CFG.ds_path)
     
     # META DATA
-    # ## Train Data
     df = pd.read_csv(F'{CFG.ds_path}/train_metadata_cleaned_kfold.csv')
-    df = update_filepaths(df, CFG)[:1000]
+    df = update_filepaths(df, CFG)
 
     # CHECK FILE FROM DS_PATH
     assert os.path.isfile(df.B02_path.iloc[0])
     print('> DS_PATH: OKAY')
     
     # DATA SPLIT
-    print(CFG.all_data)
     if CFG.all_data:
         train_X, train_y = create_folds(df, CFG=CFG)
         print(f'> FULL DATASET IS USED FOR TRAINING: {len(train_X)} samples')
@@ -115,15 +116,7 @@ if __name__ == '__main__':
         print(f'> SELECTED FOLD {CFG.selected_folds}: {len(train_X)} train / {len(val_X)} val. split. {round(len(val_X)/len(df),2)}%')
     
     # PLOT SOME DATA
-    # fold = 0
-    # fold_df = df.query('fold==@fold')[100:200]
-    # paths  = fold_df.image_path.tolist()
-    # labels = fold_df[CFG.target_col].values
-    # ds     = build_dataset(paths, labels, cache=False, batch_size=CFG.batch_size*CFG.replicas,
-    #                        repeat=True, shuffle=True, augment=True, CFG=CFG)
-    # ds = ds.unbatch().batch(20)
-    # batch = next(iter(ds))
-    # plot_batch(batch, 5, output_dir=CFG.output_dir)
+    save_batch_as_jpg(CFG, train_X, train_y)
     
     # SAVE LR SCHEDULE AS JPG IN MODEL FOLDER
     save_lr_scheduler_as_jpg(CFG.epochs, CFG.output_dir)

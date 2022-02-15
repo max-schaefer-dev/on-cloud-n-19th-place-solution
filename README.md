@@ -51,7 +51,7 @@ First, the training and testing data should be downloaded from the competition w
 
 
 ### Training
-Run train.py to train final 3 models using ppropriate arguments.
+Run train.py to train final 3 models using appropriate arguments.
 **train.py**
 - **--cfg** config file path
 - **--debug** trains only with a small portion of the entire files
