@@ -12,4 +12,4 @@ albumentations==1.1.0
 segmentation-models-pytorch==0.2.1
 opencv-python==4.5.5.62
 Pillow==7.1.2
-xarray-spatial=0.20.2
+xarray-spatial==0.3.2

@@ -16,4 +16,4 @@ dependencies:
     - matplotlib==3.2.2
     - opencv-python=4.5.5.62
     - Pillow=7.1.2
-    - xarray-spatial=0.20.2
+    - xarray-spatial=0.3.2
