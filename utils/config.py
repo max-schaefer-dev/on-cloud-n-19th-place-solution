@@ -1,7 +1,9 @@
 def dict2cfg(cfg_dict):
     """Create config from dictionary.
+
     Args:
         cfg_dict (dict): dictionary with configs to be converted to config.
+
     Returns:
         cfg: python class object as config
     """
@@ -13,10 +15,11 @@ def dict2cfg(cfg_dict):
 
 def cfg2dict(cfg):
     """Create dictionary from config.
+    
     Args:
         cfg (config): python class object as config.
     
-        Returns:
-            cfg_dict (dict): dictionary with configs.
+    Returns:
+        cfg_dict (dict): dictionary with configs.
     """
     return {k:v for k,v in dict(vars(cfg)).items() if '__' not in k}

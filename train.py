@@ -18,19 +18,21 @@ from dataset.processing import update_filepaths
 from dataset.split import create_folds
 
 def train(CFG):
-
+    # convert CFG object to dict
     cfg_dict = cfg2dict(CFG)
 
     # define augmentations
     cfg_dict['train_transform'] = prepare_train_augmentation()
     cfg_dict['val_transform'] = prepare_val_augmentation()
 
+    # prepare the model
     cloud_model = prepare_model(CFG, df)
 
+    # prepare the trainer need for training
     trainer = prepare_trainer(CFG)
     trainer.fit(model=cloud_model)
 
-    # save model weights after last epoch
+    # save model weights after training into output_dir
     model_weight_path = f'{CFG.output_dir}/{CFG.model_name}.pt'
     torch.save(cloud_model.state_dict(), model_weight_path)
 
@@ -116,7 +118,7 @@ if __name__ == '__main__':
         print(f'> SELECTED FOLD {CFG.selected_folds}: {len(train_X)} train / {len(val_X)} val. split. {round(len(val_X)/len(df),2)}%')
     
     # PLOT SOME DATA
-    save_batch_as_jpg(CFG, train_X, train_y)
+    save_batch_as_jpg(CFG, train_X, train_y, 5)
     
     # SAVE LR SCHEDULE AS JPG IN MODEL FOLDER
     save_lr_scheduler_as_jpg(CFG.epochs, CFG.output_dir)

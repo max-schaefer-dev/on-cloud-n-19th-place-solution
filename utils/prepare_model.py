@@ -3,6 +3,16 @@ from dataset.split import create_folds
 from utils.config import cfg2dict
 
 def prepare_model(CFG, df):
+    """
+    Creates a CloudModel object with provided CFG and dataframe.
+
+    Args:
+        CFG: python class object as config
+        df (pd.DataFrame): dataframe of full dataset
+
+    Returns:
+        cloud_model (CloudModel): CloudModel object
+    """
 
     cfg_dict = cfg2dict(CFG)
 

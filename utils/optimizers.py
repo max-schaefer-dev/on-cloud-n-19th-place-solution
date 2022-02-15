@@ -1,6 +1,18 @@
 import torch
 
 def get_optimizer(model_params, lr, opt_name):
+    """
+    Calls chosen optimizer from the pytorch library.
+
+    Args:
+        model_params (generator): model parameters
+        lr (float): learning rate
+        opt_name (string): optimizer name used for training
+
+    Returns:
+        opt (pytorch object): optimizer from the pytorch library
+    """
+    print(type(model_params))
     if opt_name=='Adam':
         opt = torch.optim.Adam(params=model_params, lr=lr)
     elif opt_name=='AdamW':

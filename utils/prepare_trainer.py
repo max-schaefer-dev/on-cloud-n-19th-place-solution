@@ -2,8 +2,15 @@ import pytorch_lightning as pl
 from utils.callbacks import get_callbacks
 
 def prepare_trainer(CFG):
-    # Set up pytorch_lightning.Trainer object
-    
+    """
+    Creates a pl.Trainer object with provided CFG.
+
+    Args:
+        CFG: python class object as config
+    Returns:
+        iou (pl.Trainer): pytorch lightning Trainer
+    """
+        
     if CFG.all_data:
         trainer = pl.Trainer(
             gpus=1,

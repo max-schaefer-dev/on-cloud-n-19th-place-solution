@@ -1,20 +1,25 @@
 import albumentations as A
 
 def prepare_train_augmentation():
+    """Create an Albumentation Compose object with used augmentations for training.
 
-    tranform = A.Compose([
+    Returns:
+        transform (A.Compose): list with augmentations.
+    """
+    transform = A.Compose([
         A.HorizontalFlip(p=0.5),
         A.VerticalFlip(p=0.5),
     ])
 
-    return tranform
+    return transform
 
 def prepare_val_augmentation():
+    """Create an Albumentation Compose object with used augmentations for validation.
+    
+    Returns:
+        transform (A.Compose): list with augmentations.
     """
-
-    """
-
-    tranform = A.Compose([
+    transform = A.Compose([
     ])
 
     return None

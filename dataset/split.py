@@ -6,7 +6,13 @@ from sklearn.model_selection import KFold, StratifiedKFold, GroupKFold, Stratifi
     
 # DATA SPLIT
 def create_folds(df, CFG=None):
-
+    """Splits the Dataframe into train dataset and validation dataset
+    Args:
+        df (pd.DataFrame): full dataframe
+        CFG: python class object as config
+    Returns:
+        train_X, train_y, val_X, val_y (pd.DataFrame): dataframes for training and validation.
+    """
     feature_cols = ["chip_id"] + [f"{band}_path" for band in CFG.selected_bands]
 
     if CFG.all_data:

@@ -1,6 +1,14 @@
 import pytorch_lightning as pl
 
 def get_callbacks(CFG):
+    """Returns the callbacks used by pl.Trainer.
+    
+    Args:
+        CFG: python class object as config
+        
+    Returns:
+        callbacks (list): list with callbacks.
+    """
     lr_monitor = pl.callbacks.LearningRateMonitor(logging_interval='epoch')
 
     checkpoint_callback = pl.callbacks.ModelCheckpoint(

@@ -23,7 +23,8 @@ def true_color_img(chip_id, data_dir='data/train_features'):
 
     return ms.true_color(r=red, g=green, b=blue)
 
-def save_batch_as_jpg(CFG, train_X, train_y):
+def save_batch_as_jpg(CFG, train_X, train_y, num_images):
+    """Saves a plot of a sample batch of images as a .jpg in the model folder"""
     transforms = prepare_train_augmentation()
 
     train_dataset = CloudDataset(
@@ -33,14 +34,18 @@ def save_batch_as_jpg(CFG, train_X, train_y):
             transforms=transforms,
         )
 
-    fig, axs = plt.subplots(2,5, figsize=(26, 10), facecolor='w', edgecolor='k')
+    num_rows = num_images/5
+
+    assert (num_rows).is_integer(), 'num_images must be devisible through 5'
+
+    fig, axs = plt.subplots(int(num_rows),5, figsize=(25, 10), facecolor='w', edgecolor='k')
     fig.subplots_adjust(hspace = .25, wspace=.10)
 
     axs = axs.ravel()
 
     chip_ids = iter(train_dataset)
 
-    for i in range(10):
+    for i in range(num_images):
         chip_id = next(chip_ids)['chip_id']
         image = true_color_img(chip_id)
 
@@ -50,6 +55,8 @@ def save_batch_as_jpg(CFG, train_X, train_y):
     plt.savefig(f'{CFG.output_dir}/sample_batch.jpg',dpi=100,bbox_inches='tight',pad_inches=0)
 
 def save_lr_scheduler_as_jpg(epochs, output_dir):
+    """Saves a plot of the used lr_scheduler as a .jpg in the model folder"""
+
     model = torch.nn.Linear(2, 1)
     optimizer = torch.optim.SGD(model.parameters(), lr=100)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=10, eta_min=0)
