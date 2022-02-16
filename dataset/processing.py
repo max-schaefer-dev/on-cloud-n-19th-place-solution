@@ -1,6 +1,6 @@
 import pandas as pd
 
-def update_filepaths(df, CFG):
+def update_filepaths(df, bands, ds_path):
     """Updates the image paths to the correct data directory provided by CFG.data
 
     Args:
@@ -12,8 +12,9 @@ def update_filepaths(df, CFG):
     """
     updated_df = df.copy(deep=True)
     
-    for band in CFG.selected_bands:
-        updated_df[f'{band}_path'] = CFG.ds_path + '/train_features/' + updated_df.chip_id + f'/{band}.tif'
+    for band in bands:
+        # updated_df[f'{band}_path'] = ds_path + '/train_features/' + updated_df.chip_id + f'/{band}.tif'
+        updated_df[f'{band}_path'] = ds_path / f'/train_features/{updated_df.chip_id}/{band}.tif'
 
-    updated_df['label_path'] = CFG.ds_path + '/train_labels/' + updated_df.chip_id + '.tif'
+    updated_df['label_path'] = ds_path / f'/train_labels/{updated_df.chip_id}.tif'
     return updated_df

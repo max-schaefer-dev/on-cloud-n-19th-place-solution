@@ -64,39 +64,36 @@ Run train.py to train final 3 models using appropriate arguments.
 - **--output-dir** path to save model weights and necessary files
 
 ### Prediciton
-Run predict_soln.py in order to predict on test images.
+Run predict.py in order to predict on test images.
 
-#### predict_soln.py
-- **--cfg** config file path
-- **--ckpt-cfg** config file for already given checkpoints. If new models are to be evaluated,  --cfg should be altered accordingly.
-- **--model-dir** the directory where the models listed in config files are located. The * complete model location is model-dir/{ckpt-cfg model name}.
+#### predict.py
+- **--model-dir** the directory where the models listed in are located. The * complete model location is model-dir/*.pt.
+- **--ensemble** ensemble mode (0 = off, 1 = on)
 - **--fast-dev-run** predicts only with 1 batch of the entire files
 - **--output-dir** output folder to to save submission file
 - **--tta** number of TTA's
+- **--batch-size** batch size
 
 ## Infer Pipeline
 * **Infer without Training:** First download the checkpoints from [here](https://www.kaggle.com/maxschfer/ocn-checkpoints) and place them on `./output` directory then run the following codes.
 ```
-!python prepare_data.py --infer-only --data-dir data/raw
-!python predict_soln.py
+!python predict.py
 ```
 
 * **Infer after Training:** After training is done, run the following codes.
 ```
-!python predict_soln.py
+!python predict.py
 ```
 
-> Before prediction, file tree would look like this:
+> Before predict, file tree would look like this:
 ```
 ../on-cloud-n/
 ...
 ├── data
-│   └── processed
-│        ├── sample_submission.csv
-│        ├── test.csv
-│        ├── test_images
-│        ├── train.csv
-│        └── train_images
+│   ├── train_features
+│   ├── train_labels
+│   ├── test_features
+│   └── train_metadata.csv
 ...
 ├── output
 │    ├── Resnet34-Unet-512x512

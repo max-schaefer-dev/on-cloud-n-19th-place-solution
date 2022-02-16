@@ -1,3 +1,7 @@
+import os
+from typing import List
+import pandas as pd
+
 def get_metadata(features_dir: os.PathLike, bands: List[str]):
     """
     Given a folder of feature data, return a dataframe where the index is the chip id
