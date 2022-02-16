@@ -54,11 +54,11 @@ First, the training and testing data should be downloaded from the competition w
 Run train.py to train final 3 models using appropriate arguments.
 **train.py**
 - **--cfg** config file path
-- **--debug** trains only with a small portion of the entire files
+- **--fast-dev-run** trains only with 1 batch of the entire files
 - **--model-name** name of the model
-- **--img-size** image size. e.g. --img-size 576 1024
+- **--img-size** image size. e.g. --img-size 512 512
 - **--batch-size** batch size
-- **--selected-folds** selected folds for training. e.g. --selected-folds 0 1 2
+- **--selected-folds** selected folds for training. e.g. --selected-folds 4
 - **--all-data** use all data for training. No validation data
 - **--ds-path** dataset path
 - **--output-dir** path to save model weights and necessary files
@@ -70,13 +70,38 @@ Run predict_soln.py in order to predict on test images.
 - **--cfg** config file path
 - **--ckpt-cfg** config file for already given checkpoints. If new models are to be evaluated,  --cfg should be altered accordingly.
 - **--model-dir** the directory where the models listed in config files are located. The * complete model location is model-dir/{ckpt-cfg model name}.
-- **--debug** predicts only with a small portion of the entire files
+- **--fast-dev-run** predicts only with 1 batch of the entire files
 - **--output-dir** output folder to to save submission file
 - **--tta** number of TTA's
 
 ## Infer Pipeline
-- Infer without Training: First download the checkpoint from here and place them on ./output directory then run the following codes.
-
-```python
+* **Infer without Training:** First download the checkpoints from [here](https://www.kaggle.com/maxschfer/ocn-checkpoints) and place them on `./output` directory then run the following codes.
+```
 !python prepare_data.py --infer-only --data-dir data/raw
+!python predict_soln.py
+```
+
+* **Infer after Training:** After training is done, run the following codes.
+```
+!python predict_soln.py
+```
+
+> Before prediction, file tree would look like this:
+```
+../on-cloud-n/
+...
+├── data
+│   └── processed
+│        ├── sample_submission.csv
+│        ├── test.csv
+│        ├── test_images
+│        ├── train.csv
+│        └── train_images
+...
+├── output
+│    ├── Resnet34-Unet-512x512
+│    ├── EfficientNetB1-Unet-512x512
+│    └── Resnext50-Unet-512x512
+...
+ 
 ```
