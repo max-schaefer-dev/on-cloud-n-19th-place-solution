@@ -1,3 +1,4 @@
+model_name: resnext50_32x4d-unet-512
 encoder: resnext50_32x4d
 weights: imagenet
 decoder: unet

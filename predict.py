@@ -15,7 +15,7 @@ from cloud_model import CloudModel
 from utils.config import dict2cfg
 from dataset.augment import prepare_train_augmentation, prepare_val_augmentation
 from dataset.cloud_dataset import CloudDataset
-from dataset.processing import update_filepaths
+from dataset.processing import update_filepaths, prepare_data
 from dataset.split import create_folds
 from utils.get_metadata import get_metadata
 from utils.prepare_tta import prepare_tta
@@ -130,11 +130,11 @@ def predict(
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--model-dir', type=str, default='model', help='where checkpoint weights can be found')
+    parser.add_argument('--batch-size', type=int, default=8, help='number of TTA')
     parser.add_argument('--ensemble', type=int, default=1, help='use ensemble mode')
     parser.add_argument('--fast-dev-run', type=int, default=0, help='process only small portion in debug mode')
     parser.add_argument('--output-dir', type=str, default='submission', help='output path to save the submission')
     parser.add_argument('--tta', type=int, default=1, help='number of TTA')
-    parser.add_argument('--batch-size', type=int, default=8, help='number of TTA')
     CFG = parser.parse_args()
 
     if CFG.ensemble:
@@ -144,6 +144,10 @@ if __name__ == '__main__':
         model_paths = glob.glob(f'{CFG.model_dir}/*.pt')
         config_paths = glob.glob(f'{CFG.model_dir}/*.yaml')
 
+    # Prepare data
+    # prepare_data(DATA_DIRECTORY)
+
+    # Inference
     predict(
         CFG=CFG,
         model_paths = model_paths,

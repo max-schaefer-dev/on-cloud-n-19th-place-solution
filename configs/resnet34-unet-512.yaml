@@ -1,3 +1,4 @@
+model_name: resnet34-unet-512
 encoder: resnet34
 weights: imagenet
 decoder: unet

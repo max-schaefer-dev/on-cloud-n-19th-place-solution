@@ -8,6 +8,7 @@ import os
 import pandas as pd
 import albumentations as A
 import torch
+from pathlib import Path
 
 from utils.config import dict2cfg, cfg2dict
 from utils.prepare_model import prepare_model
@@ -16,6 +17,11 @@ from utils.visualize import save_lr_scheduler_as_jpg, save_batch_as_jpg
 from dataset.augment import prepare_train_augmentation, prepare_val_augmentation
 from dataset.processing import update_filepaths
 from dataset.split import create_folds
+
+DATA_DIRECTORY = Path("./data")
+PREDICTIONS_DIRECTORY = DATA_DIRECTORY / "predictions"
+INPUT_IMAGES_DIRECTORY = DATA_DIRECTORY / "test_features"
+BANDS = ["B02", "B03", "B04", "B08"]
 
 def train(CFG):
     # convert CFG object to dict
@@ -103,18 +109,18 @@ if __name__ == '__main__':
     
     # META DATA
     df = pd.read_csv(F'{CFG.ds_path}/train_metadata_cleaned_kfold.csv')
-    df = update_filepaths(df, CFG)
+    df = update_filepaths(df, BANDS, DATA_DIRECTORY)  # (df, BANDS, DATA_DIRECTORY) => (df, bands, ds_path):
 
     # CHECK FILE FROM DS_PATH
-    assert os.path.isfile(df.B02_path.iloc[0])
+    assert os.path.isfile(df.iloc[0].B02_path)
     print('> DS_PATH: OKAY')
     
     # DATA SPLIT
     if CFG.all_data:
-        train_X, train_y = create_folds(df, CFG=CFG)
+        train_X, train_y = create_folds(df, bands=BANDS, CFG=CFG)
         print(f'> FULL DATASET IS USED FOR TRAINING: {len(train_X)} samples')
     else:
-        train_X, train_y, val_X, val_y = create_folds(df, CFG=CFG)
+        train_X, train_y, val_X, val_y = create_folds(df, bands=BANDS, CFG=CFG)
         print(f'> SELECTED FOLD {CFG.selected_folds}: {len(train_X)} train / {len(val_X)} val. split. {round(len(val_X)/len(df),2)}%')
     
     # PLOT SOME DATA
