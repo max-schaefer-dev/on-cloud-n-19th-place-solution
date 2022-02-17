@@ -45,10 +45,10 @@ def train(CFG):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--cfg', type=str, default='./configs/on-cloud-n.yaml', help='config file')
+    parser.add_argument('--cfg', type=str, default='./configs/resnet34-unet-512.yaml', help='config file')
     parser.add_argument('--fast-dev-run', type=int, default=None, help='process only small portion in debug mode')
     parser.add_argument('--model-name', type=str, default=None, help='name of the model')
-    parser.add_argument('--img-size', type=int, nargs='+', default=None, help='image size: H x W')
+    parser.add_argument('--img-size', type=int, default=512, help='image size: H x W')
     parser.add_argument('--batch-size', type=int, default=None, help='batch_size for the model')
     parser.add_argument('--loss', type=str, default=None, help='name of the loss function')
     parser.add_argument('--scheduler', type=str, default=None, help='lr scheduler')
@@ -70,9 +70,6 @@ if __name__ == '__main__':
     # OVERWRITE
     if opt.model_name:
         CFG.model_name = opt.model_name
-    if opt.img_size:
-        assert len(opt.img_size)==2, 'image size must be H x W'
-        CFG.img_size = opt.img_size
     if opt.batch_size:
         CFG.batch_size = opt.batch_size
     if opt.loss:
@@ -80,10 +77,10 @@ if __name__ == '__main__':
     if opt.scheduler:
         CFG.scheduler = opt.scheduler
     if opt.output_dir:
-        output_dir = os.path.join(opt.output_dir, '{}-{}x{}'.format(CFG.model_name, CFG.img_size[0], CFG.img_size[1]))
+        output_dir = os.path.join(opt.output_dir, '{}-{}x{}'.format(CFG.model_name, opt.img_size, opt.img_size))
         os.system(f'mkdir -p {output_dir}')
     else:
-        output_dir = os.path.join('output', '{}-{}x{}'.format(CFG.model_name, CFG.img_size[0], CFG.img_size[1]))
+        output_dir = os.path.join('output', '{}-{}x{}'.format(CFG.model_name, opt.img_size, opt.img_size))
         os.system(f'mkdir -p {output_dir}')
     CFG.output_dir = output_dir
     if opt.selected_folds:
@@ -105,7 +102,7 @@ if __name__ == '__main__':
     if not os.path.isdir(CFG.ds_path):
         raise ValueError(f'directory, <{CFG.ds_path}> not found')
     
-    print('> DS_PATH:',CFG.ds_path)
+    print('> DS_PATH:', CFG.ds_path)
     
     # META DATA
     df = pd.read_csv(F'{CFG.ds_path}/train_metadata_cleaned_kfold.csv')
@@ -128,6 +125,11 @@ if __name__ == '__main__':
     
     # SAVE LR SCHEDULE AS JPG IN MODEL FOLDER
     save_lr_scheduler_as_jpg(CFG.epochs, CFG.output_dir)
+
+    # SAVE CONFIG
+    CFG_v2 = cfg2dict(CFG)
+    with open(f'{CFG.output_dir}/{CFG.model_name}-{CFG.image_size}.yaml', 'w') as outfile:
+        yaml.dump(CFG_v2, outfile, default_flow_style=False)
 
     # Training
     print('> TRAINING:')

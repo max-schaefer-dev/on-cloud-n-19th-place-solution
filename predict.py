@@ -29,7 +29,6 @@ BANDS = ["B02", "B03", "B04", "B08"]
 # os.environ["TORCH_HOME"] = str(ASSETS_DIRECTORY / "assets/torch")
 
 def predict(
-    # model_weights_path: Path = ASSETS_DIRECTORY / "cloud_model.pt",
     CFG,
     model_paths: list = [],
     config_paths: list = [],
@@ -102,6 +101,7 @@ def predict(
 
         models[MODEL_CFG.model_name] = cloud_model
 
+
     for batch_index, batch in enumerate(test_dataloader):
         logger.debug(f"Predicting batch {batch_index} of {len(test_dataloader)}")
         x = batch["chip"].to('cuda')
@@ -112,8 +112,8 @@ def predict(
                 preds = model.forward(x)
                 all_preds.append(preds)
 
-                preds = torch.stack(all_preds)
-                preds = torch.mean(preds, axis=0)
+            preds = torch.stack(all_preds)
+            preds = torch.mean(preds, axis=0)
         else:
             model_name, model = list(models.items())[0]
             preds = model.forward(x)
@@ -129,7 +129,7 @@ def predict(
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model-dir', type=str, default='model', help='where checkpoint weights can be found')
+    parser.add_argument('--model-dir', type=str, default='output', help='where checkpoint weights can be found')
     parser.add_argument('--batch-size', type=int, default=8, help='number of TTA')
     parser.add_argument('--ensemble', type=int, default=1, help='use ensemble mode')
     parser.add_argument('--fast-dev-run', type=int, default=0, help='process only small portion in debug mode')
@@ -138,8 +138,8 @@ if __name__ == '__main__':
     CFG = parser.parse_args()
 
     if CFG.ensemble:
-        model_paths = glob.glob(f'{CFG.model_dir}/*/*.pt')
-        config_paths = glob.glob(f'{CFG.model_dir}/*/*.yaml')
+        model_paths = glob.glob(f'./output/*/*.pt')
+        config_paths = glob.glob(f'./output/*/*.yaml')
     else:
         model_paths = glob.glob(f'{CFG.model_dir}/*.pt')
         config_paths = glob.glob(f'{CFG.model_dir}/*.yaml')
