@@ -20,22 +20,14 @@ from dataset.split import create_folds
 from utils.get_metadata import get_metadata
 from utils.prepare_tta import prepare_tta
 
-DATA_DIRECTORY = Path("./data")
-PREDICTIONS_DIRECTORY = DATA_DIRECTORY / "predictions"
-INPUT_IMAGES_DIRECTORY = DATA_DIRECTORY / "test_features"
-BANDS = ["B02", "B03", "B04", "B08"]
-
-# Set the pytorch cache directory and include cached models in your submission.zip
-# os.environ["TORCH_HOME"] = str(ASSETS_DIRECTORY / "assets/torch")
-
 def predict(
     CFG,
     model_paths: list = [],
     config_paths: list = [],
     batch_size: int = 8,
     num_workers: int = 2,
-    test_features_dir: Path = DATA_DIRECTORY / "test_features",
-    predictions_dir: Path = PREDICTIONS_DIRECTORY,
+    test_features_dir: Path = Path('data/test_features'),
+    predictions_dir: Path = Path('data/predictions'),
     fast_dev_run: bool = False,
 ):
     """
@@ -60,18 +52,17 @@ def predict(
     predictions_dir.mkdir(exist_ok=True, parents=True)
 
     # META DATA
-    df = pd.read_csv(F'./data/train_metadata_cleaned_kfold.csv')
-    df = update_filepaths(df, BANDS, DATA_DIRECTORY)
+    df = pd.read_csv(F'./data/metadata_updated.csv')
+    df = update_filepaths(df, CFG.bands, CFG.ds_path)
 
-    # test_features_dir = Path('/content/on-cloud-n-19th-place-solution/data/test_features')
     # PREPARE DATA
-    logger.info("Loading test metadata")
-    test_metadata = get_metadata(test_features_dir, bands=BANDS)
+    logger.info('Loading test metadata')
+    test_metadata = get_metadata(test_features_dir, bands=CFG.bands)
     if CFG.fast_dev_run:
         test_metadata = test_metadata.head(50)
-    logger.info(f"Found {len(test_metadata)} chips")
+    logger.info(f'Found {len(test_metadata)} chips')
 
-    test_dataset = CloudDataset(x_paths=test_metadata, bands=BANDS)
+    test_dataset = CloudDataset(x_paths=test_metadata, bands=CFG.bands)
     test_dataloader = torch.utils.data.DataLoader(
         test_dataset,
         batch_size=batch_size,
@@ -93,7 +84,7 @@ def predict(
         cfg_dict['train_transform'] = prepare_train_augmentation()
         cfg_dict['val_transform'] = prepare_val_augmentation()
 
-        cloud_model = CloudModel(bands=BANDS, hparams=cfg_dict)
+        cloud_model = CloudModel(bands=CFG.bands, hparams=cfg_dict)
         cloud_model.load_state_dict(torch.load(model_path))
         cloud_model.eval()
 
@@ -133,6 +124,8 @@ if __name__ == '__main__':
     parser.add_argument('--batch-size', type=int, default=8, help='number of TTA')
     parser.add_argument('--ensemble', type=int, default=1, help='use ensemble mode')
     parser.add_argument('--fast-dev-run', type=int, default=0, help='process only small portion in debug mode')
+    parser.add_argument('--ds-path', type=str, default='data', help='path to dataset')
+    parser.add_argument('--bands', type=list, default=['B02', 'B03', 'B04', 'B08'], help='path to dataset')
     parser.add_argument('--output-dir', type=str, default='submission', help='output path to save the submission')
     parser.add_argument('--tta', type=int, default=1, help='number of TTA')
     CFG = parser.parse_args()
@@ -144,6 +137,9 @@ if __name__ == '__main__':
         model_paths = glob.glob(f'{CFG.model_dir}/*.pt')
         config_paths = glob.glob(f'{CFG.model_dir}/*.yaml')
 
+    # convert ds_path to a Path object
+    CFG.ds_path = Path(CFG.ds_path)
+
     # Prepare data
     # prepare_data(DATA_DIRECTORY)
 
@@ -152,7 +148,11 @@ if __name__ == '__main__':
         CFG=CFG,
         model_paths = model_paths,
         config_paths = config_paths,
-        batch_size = CFG.batch_size
+        batch_size = CFG.batch_size,
+        num_workers = 2,
+        test_features_dir = CFG.ds_path / 'test_features',
+        predictions_dir = CFG.ds_path / 'predictions',
+        fast_dev_run = False
     )
 
     logger.info(f"""Saved {len(list(PREDICTIONS_DIRECTORY.glob("*.tif")))} predictions""")

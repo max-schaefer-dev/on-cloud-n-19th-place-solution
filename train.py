@@ -11,17 +11,13 @@ import torch
 from pathlib import Path
 
 from utils.config import dict2cfg, cfg2dict
+from utils.prepare_data import prepare_data
 from utils.prepare_model import prepare_model
 from utils.prepare_trainer import prepare_trainer
 from utils.visualize import save_lr_scheduler_as_jpg, save_batch_as_jpg
 from dataset.augment import prepare_train_augmentation, prepare_val_augmentation
 from dataset.processing import update_filepaths
 from dataset.split import create_folds
-
-DATA_DIRECTORY = Path("./data")
-PREDICTIONS_DIRECTORY = DATA_DIRECTORY / "predictions"
-INPUT_IMAGES_DIRECTORY = DATA_DIRECTORY / "test_features"
-BANDS = ["B02", "B03", "B04", "B08"]
 
 def train(CFG):
     # convert CFG object to dict
@@ -31,10 +27,10 @@ def train(CFG):
     cfg_dict['train_transform'] = prepare_train_augmentation()
     cfg_dict['val_transform'] = prepare_val_augmentation()
 
-    # prepare the model
+    # prepare model
     cloud_model = prepare_model(CFG, df)
 
-    # prepare the trainer need for training
+    # prepare pytorch lightning trainer needed for training
     trainer = prepare_trainer(CFG)
     trainer.fit(model=cloud_model)
 
@@ -58,16 +54,16 @@ if __name__ == '__main__':
     parser.add_argument('--output-dir', type=str, default=None, help='output path to save the model')
     opt = parser.parse_args()
     
-    # LOADING CONFIG
+    # loading config
     CFG_PATH = opt.cfg
     cfg_dict = yaml.load(open(CFG_PATH, 'r'), Loader=yaml.FullLoader)
     CFG      = dict2cfg(cfg_dict) # dict to class
     print('> CONFIG:', cfg_dict)
 
-    # SEEDING
+    # seeding
     seed_everything(seed=CFG.seed)
 
-    # OVERWRITE
+    # overwrite cfg with passed arguments
     if opt.model_name:
         CFG.model_name = opt.model_name
     if opt.batch_size:
@@ -95,42 +91,42 @@ if __name__ == '__main__':
         print('> DEBUG MODE:', f'{bool(CFG.fast_dev_run)}. CFG.all_data set to 0',)
     else:
         print('> DEBUG MODE:', bool(CFG.fast_dev_run))
-
-    # DS_PATH
     if opt.ds_path is not None:
-        CFG.ds_path = opt.ds_path
+        CFG.ds_path = Path(opt.ds_path)
     if not os.path.isdir(CFG.ds_path):
         raise ValueError(f'directory, <{CFG.ds_path}> not found')
-    
     print('> DS_PATH:', CFG.ds_path)
-    
-    # META DATA
-    df = pd.read_csv(F'{CFG.ds_path}/train_metadata_cleaned_kfold.csv')
-    df = update_filepaths(df, BANDS, DATA_DIRECTORY)  # (df, BANDS, DATA_DIRECTORY) => (df, bands, ds_path):
 
-    # CHECK FILE FROM DS_PATH
+    # meta data
+    df = pd.read_csv(F'{CFG.ds_path}/metadata_updated.csv')
+    df = update_filepaths(df, CFG.bands, CFG.ds_path)
+
+    # check file from ds_path
     assert os.path.isfile(df.iloc[0].B02_path)
     print('> DS_PATH: OKAY')
     
-    # DATA SPLIT
+    # data split
     if CFG.all_data:
-        train_X, train_y = create_folds(df, bands=BANDS, CFG=CFG)
+        train_X, train_y = create_folds(df, bands=CFG.bands, CFG=CFG)
         print(f'> FULL DATASET IS USED FOR TRAINING: {len(train_X)} samples')
     else:
-        train_X, train_y, val_X, val_y = create_folds(df, bands=BANDS, CFG=CFG)
+        train_X, train_y, val_X, val_y = create_folds(df, bands=CFG.bands, CFG=CFG)
         print(f'> SELECTED FOLD {CFG.selected_folds}: {len(train_X)} train / {len(val_X)} val. split. {round(len(val_X)/len(df),2)}%')
     
-    # PLOT SOME DATA
+    # save a plot some data
     save_batch_as_jpg(CFG, train_X, train_y, 5)
     
-    # SAVE LR SCHEDULE AS JPG IN MODEL FOLDER
+    # save lr schedule as jpg
     save_lr_scheduler_as_jpg(CFG.epochs, CFG.output_dir)
 
-    # SAVE CONFIG
+    # save config
     CFG_v2 = cfg2dict(CFG)
     with open(f'{CFG.output_dir}/{CFG.model_name}-{CFG.image_size}.yaml', 'w') as outfile:
         yaml.dump(CFG_v2, outfile, default_flow_style=False)
 
-    # Training
+    # prepare data
+    prepare_data(CFG.ds_path)
+
+    # training
     print('> TRAINING:')
     train(CFG)

@@ -17,14 +17,14 @@ def prepare_model(CFG, df):
     cfg_dict = cfg2dict(CFG)
 
     if CFG.all_data:
-        train_X, train_y = create_folds(df, CFG.selected_bands, CFG=CFG)
+        train_X, train_y = create_folds(df, CFG.bands, CFG=CFG)
         val_X, val_y = None, None
     else:
-        train_X, train_y, val_X, val_y = create_folds(df, CFG.selected_bands, CFG=CFG)
+        train_X, train_y, val_X, val_y = create_folds(df, CFG.bands, CFG=CFG)
         
 
     cloud_model = CloudModel(
-        bands=CFG.selected_bands,
+        bands=CFG.bands,
         x_train=train_X,
         y_train=train_y,
         x_val=val_X,
