@@ -126,7 +126,7 @@ if __name__ == '__main__':
     parser.add_argument('--ensemble', type=int, default=1, help='use ensemble mode')
     parser.add_argument('--fast-dev-run', type=int, default=0, help='process only small portion in debug mode')
     parser.add_argument('--ds-path', type=str, default='data', help='path to dataset')
-    parser.add_argument('--bands', type=list, default=['B02', 'B03', 'B04', 'B08'], help='path to dataset')
+    parser.add_argument('--bands', type=list, default=['B02', 'B03', 'B04', 'B08'], help='bands used for model')
     parser.add_argument('--output-dir', type=str, default='submission', help='output path to save the submission')
     parser.add_argument('--tta', type=int, default=1, help='number of TTA')
     CFG = parser.parse_args()
@@ -134,9 +134,15 @@ if __name__ == '__main__':
     if CFG.ensemble:
         model_paths = glob.glob(f'./output/*/*.pt')
         config_paths = glob.glob(f'./output/*/*.yaml')
+        assert len(model_paths) != 0, f'No model weights found in {CFG.model_dir}'
+        print(f'> INFERENCE: MODELS: {len(model_paths)}, TTA: {CFG.tta}')
     else:
         model_paths = glob.glob(f'{CFG.model_dir}/*.pt')
         config_paths = glob.glob(f'{CFG.model_dir}/*.yaml')
+        assert len(model_paths) != 0, f'No model weights found in {CFG.model_dir}'
+        assert len(model_paths) != 0, f'No model config found in {CFG.model_dir}'
+        
+        print(f'> INFERENCE: MODELS: 1, TTA: {CFG.tta}')
 
     # convert ds_path to a Path object
     CFG.ds_path = Path(CFG.ds_path)

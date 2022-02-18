@@ -58,10 +58,13 @@ Run train.py to train final 3 models using appropriate arguments.
 - **--model-name** name of the model
 - **--img-size** image size. e.g. --img-size 512 512
 - **--batch-size** batch size
-- **--selected-folds** selected folds for training. e.g. --selected-folds 4
+- **--loss** loss used for model
+- **--scheduler** lr scheduler
+- **--selected-folds** folds to train
 - **--all-data** use all data for training. No validation data
 - **--ds-path** dataset path
 - **--output-dir** path to save model weights and necessary files
+
 
 ## Training Pipeline
 ```
@@ -75,8 +78,11 @@ Run predict.py in order to predict on test images.
 
 #### predict.py
 - **--model-dir** the directory where the models listed in are located. The * complete model location is model-dir/*.pt.
+- **--batch-size** batch size
 - **--ensemble** ensemble mode (0 = off, 1 = on)
 - **--fast-dev-run** predicts only with 1 batch of the entire files
+- **--ds-path** path to dataset
+- **--bands** bands used in model
 - **--output-dir** output folder to to save submission file
 - **--tta** number of TTA's
 - **--batch-size** batch size
@@ -84,17 +90,17 @@ Run predict.py in order to predict on test images.
 ## Infer Pipeline
 * **Infer without Training:** First download the checkpoints from [here](https://www.kaggle.com/maxschfer/ocn-checkpoints) and place them on `./output` directory then run the following codes.
 ```
-!python predict.py
+!python predict.py --ensemble 1 --tta 1 --batch-size 8
 ```
 
 * **Infer after Training:** After training is done, run the following codes.
 ```
-!python predict.py
+!python predict.py --ensemble 1 --tta 1 --batch-size 8
 ```
 
 > Before predict, file tree would look like this:
 ```
-../on-cloud-n/
+../on-cloud-n-19th-place-solution/
 ...
 ├── data
 │   ├── train_features
@@ -104,6 +110,8 @@ Run predict.py in order to predict on test images.
 ...
 ├── output
 │    ├── Resnet34-Unet-512x512
+│    │   ├── resnet34-unet-512.yaml
+│    │   └── resnet34-unet.pt
 │    ├── EfficientNetB1-Unet-512x512
 │    └── Resnext50-Unet-512x512
 ...

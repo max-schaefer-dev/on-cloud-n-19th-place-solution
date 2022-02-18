@@ -18,8 +18,6 @@ def update_filepaths(df, bands, ds_path):
     
     for band in bands:
         updated_df[f'{band}_path'] = str(ds_path) + '/train_features/' + updated_df.chip_id + f'/{band}.tif'
-        # updated_df[f'{band}_path'] = str(ds_path) + f'/train_features/{updated_df.chip_id}/{band}.tif'
 
-    # updated_df['label_path'] = ds_path / f'/train_labels/{updated_df.chip_id}.tif'
     updated_df['label_path'] = str(ds_path) + '/train_labels/' + updated_df.chip_id + '.tif'
     return updated_df
