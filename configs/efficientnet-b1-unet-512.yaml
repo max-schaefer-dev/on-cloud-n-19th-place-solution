@@ -18,4 +18,4 @@ fast_dev_run: 0
 all_data: 1
 ds_path: 'data'
 selected_folds: 4
-selected_bands: ['B02','B03','B04','B08']
+bands: ['B02','B03','B04','B08']
