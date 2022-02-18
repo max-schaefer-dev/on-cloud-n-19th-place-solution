@@ -63,6 +63,13 @@ Run train.py to train final 3 models using appropriate arguments.
 - **--ds-path** dataset path
 - **--output-dir** path to save model weights and necessary files
 
+## Training Pipeline
+```
+!python train.py --fast-dev-run 1 --cfg './configs/resnet34-unet-512.yaml'
+!python train.py --fast-dev-run 1 --cfg './configs/efficientnet-b1-unet-512.yaml'
+!python train.py --fast-dev-run 1 --cfg './configs/resnext50_32x4d-unet-512.yaml'
+```
+
 ### Prediciton
 Run predict.py in order to predict on test images.
 

@@ -6,7 +6,7 @@ lr: 8.317637711026709e-05
 seed: 42
 patience: 5
 num_workers: 2
-batch_size: 16
+batch_size: 8
 image_size: 512
 epochs: 31
 classes: 2
