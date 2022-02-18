@@ -4,23 +4,6 @@ import glob
 import shutil
 from tqdm.notebook import tqdm
 
-def prepare_data(data_dir):
-
-    TEST_DIRECTORY = f'{data_dir}/test_features'
-
-    if not os.path.isdir(TEST_DIRECTORY):
-        os.makedirs(TEST_DIRECTORY)
-
-    train_f_paths = glob.glob(f'{data_dir}/train_features/*')
-
-    for p in tqdm(train_f_paths[:1000]):
-        f_name = os.path.split(p)[1]
-        print('trigger')
-        if not os.path.isdir(TEST_DIRECTORY + '/' + f_name):
-            os.makedirs(TEST_DIRECTORY + '/' + f_name)
-            shutil.copytree(p, TEST_DIRECTORY + '/' + f_name)
-
-
 def update_filepaths(df, bands, ds_path):
     """Updates the image paths to the correct data directory provided by CFG.data
 

@@ -1,12 +1,12 @@
 import zipfile
-from pathlib import Path
+import pathlib
 
 def prepare_data(data_dir):
     """ Unzips the pseudo labels needed for training
     Args:
         data_dir (Path): path to the dataset directory
     """
-    if type(data_dir) == Path:
+    if isinstance(data_dir, pathlib.PosixPath):
         path_to_zip_file = data_dir / 'pseudo_labels.zip'
     else:
         path_to_zip_file = data_dir + '/pseudo_labels.zip'

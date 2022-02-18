@@ -15,7 +15,8 @@ from cloud_model import CloudModel
 from utils.config import dict2cfg
 from dataset.augment import prepare_train_augmentation, prepare_val_augmentation
 from dataset.cloud_dataset import CloudDataset
-from dataset.processing import update_filepaths, prepare_data
+from dataset.processing import update_filepaths
+from utils.prepare_data import prepare_data
 from dataset.split import create_folds
 from utils.get_metadata import get_metadata
 from utils.prepare_tta import prepare_tta
@@ -141,7 +142,7 @@ if __name__ == '__main__':
     CFG.ds_path = Path(CFG.ds_path)
 
     # Prepare data
-    # prepare_data(DATA_DIRECTORY)
+    prepare_data(CFG.ds_path)
 
     # Inference
     predict(
