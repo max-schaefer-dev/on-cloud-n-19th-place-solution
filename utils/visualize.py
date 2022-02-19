@@ -6,6 +6,7 @@ from PIL import Image
 import xarray
 import xrspatial.multispectral as ms
 import torch
+import random
 
 def get_xarray(filepath):
     """Put images in xarray.DataArray format"""
@@ -22,6 +23,31 @@ def true_color_img(chip_id, data_dir='data/train_features'):
     blue = get_xarray(f'{chip_dir}/B02.tif')
 
     return ms.true_color(r=red, g=green, b=blue)
+
+def save_prediction_as_jpg(df, pred_dir):
+    chip_id_paths = list(pred_dir.glob("*.tif"))
+    # chip_ids = df.chip_id.unique().tolist()
+    batch_chip_ids = random.choices(chip_id_paths, k=6)
+
+    fig, axs = plt.subplots(2,6, figsize=(24, 8), facecolor='w', edgecolor='k')
+    fig.subplots_adjust(hspace = .25, wspace=.20)
+    axs = axs.ravel()
+
+    pos = 0
+
+    for chip_id_path in batch_chip_ids:
+        chip_id_path = os.path.split(chip_id_path)[1]
+        chip_id = chip_id_path.split('.')[0]
+        image = true_color_img(chip_id)
+        axs[pos].imshow(image)
+        axs[pos].set_title(chip_id)
+
+        pred_path = pred_dir / f'{chip_id}.tif'
+        pred = Image.open(pred_path)
+        axs[pos+1].imshow(pred)
+        axs[pos+1].set_title('pred')
+
+        pos += 2
 
 def save_batch_as_jpg(CFG, train_X, train_y, num_images):
     """Saves a plot of a sample batch of images as a .jpg in the model folder"""

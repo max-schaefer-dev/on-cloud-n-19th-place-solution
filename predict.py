@@ -20,6 +20,7 @@ from utils.prepare_data import prepare_data
 from dataset.split import create_folds
 from utils.get_metadata import get_metadata
 from utils.prepare_tta import prepare_tta
+from utils.visualize import save_prediction_as_jpg
 
 def predict(
     CFG,
@@ -95,7 +96,7 @@ def predict(
 
 
     for batch_index, batch in enumerate(test_dataloader):
-        logger.debug(f"Predicting batch {batch_index} of {len(test_dataloader)}")
+        logger.info(f"Predicting batch {batch_index} of {len(test_dataloader)}")
         x = batch["chip"].to('cuda')
 
         if CFG.ensemble:
@@ -150,6 +151,10 @@ if __name__ == '__main__':
     # Prepare data
     prepare_data(CFG.ds_path)
 
+    # define needed Paths
+    test_features_dir = CFG.ds_path / 'test_features'
+    predictions_dir = CFG.ds_path / 'predictions'
+
     # Inference
     predict(
         CFG=CFG,
@@ -157,9 +162,11 @@ if __name__ == '__main__':
         config_paths = config_paths,
         batch_size = CFG.batch_size,
         num_workers = 2,
-        test_features_dir = CFG.ds_path / 'test_features',
-        predictions_dir = CFG.ds_path / 'predictions',
+        test_features_dir = test_features_dir,
+        predictions_dir = predictions_dir,
         fast_dev_run = False
     )
 
-    logger.info(f"""Saved {len(list(PREDICTIONS_DIRECTORY.glob("*.tif")))} predictions""")
+    logger.info(f"""Saved {len(list(predictions_dir.glob("*.tif")))} predictions""")
+
+    save_prediction_as_jpg(df, predictions_dir)
