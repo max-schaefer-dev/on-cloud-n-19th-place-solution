@@ -2,6 +2,10 @@
 
 !!! WORK IN PROGRESS !!!
 
+## Problem
+* statement: Detect clouds cover in satellite imagery to remove cloud inference
+* type: semantic segmentation
+
 ## Hardware requirements
 - Run on Google Colab Pro
 - GPU (model or N/A): 1x Tesla P100 with 16GB 
@@ -22,12 +26,13 @@ You can check the run.ipynb notebook for the main point of entry to my code.
 First, the training and testing data should be downloaded from the competition website. Ideally, the data can be placed in the data folder in the repo directory. The repo tree would then look like below:
 
 ```
-../on-cloud-n/
+../on-cloud-n-19th-place-solution/
 ├── LICENSE.md
 ├── README.md
 ├── configs
-│   ├── checkpoints.json
-│   └── deep-chimpact.yaml
+│   ├── efficientnet-b1-unet-512.yaml
+│   ├── resnext50_32x4d-unet-512.yaml
+│   └── resnet34-unet-512.yaml
 ├── data
 │   ├── train_features
 │   │   ├── train_chip_id_1
@@ -36,12 +41,14 @@ First, the training and testing data should be downloaded from the competition w
 │   │   │   ├── B04.tif
 │   │   │   └── B08.tif
 │   │   └── ...
-│   └── train_labels
-│       ├── train_chip_id_1.tif
-│       ├── ...
-│       ...
-├── train_metadata.csv
+│   ├── train_labels
+│   │   ├── train_chip_id_1.tif
+│   │   ├── ...
+│   │   ...
+│   ├── metadata_updated.csv
+│   └── pseudo_labels.zip
 ...
+
 ```
 
 **prepare_data.py**
@@ -83,7 +90,7 @@ Run predict.py in order to predict on test images.
 - **--fast-dev-run** predicts only with 1 batch of the entire files
 - **--ds-path** path to dataset
 - **--bands** bands used in model
-- **--output-dir** output folder to to save submission file
+- **--output-dir** output folder to to save generated .tif files
 - **--tta** number of TTA's
 - **--batch-size** batch size
 
