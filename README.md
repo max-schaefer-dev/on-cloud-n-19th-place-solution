@@ -3,8 +3,9 @@
 !!! WORK IN PROGRESS !!!
 
 ## Problem
-* statement: Detect clouds cover in satellite imagery to remove cloud inference
-* type: semantic segmentation
+* Statement: Detect clouds cover in satellite imagery to remove cloud inference
+* Type: Semantic Segmentation
+* Competition link: https://www.drivendata.org/competitions/83/cloud-cover/
 
 ## Hardware requirements
 - Run on Google Colab Pro
@@ -16,7 +17,7 @@
 - Driver Version: 460.32.03
 - Disk: 128 GB
 
-## Softwae requirements
+## Software requirements
 Required software are listed on requirements.txt. Please install all the dependencies before executing the pipeline.
 
 ## How to run
@@ -74,16 +75,17 @@ Run train.py to train final 3 models using appropriate arguments.
 
 
 ## Training Pipeline
+
 ```
 !python train.py --fast-dev-run 1 --cfg './configs/resnet34-unet-512.yaml'
 !python train.py --fast-dev-run 1 --cfg './configs/efficientnet-b1-unet-512.yaml'
 !python train.py --fast-dev-run 1 --cfg './configs/resnext50_32x4d-unet-512.yaml'
 ```
 
-### Prediciton
+## Prediction
 Run predict.py in order to predict on test images.
 
-#### predict.py
+### predict.py
 - **--model-dir** the directory where the models listed in are located. The * complete model location is model-dir/*.pt.
 - **--batch-size** batch size
 - **--ensemble** ensemble mode (0 = off, 1 = on)
@@ -94,13 +96,18 @@ Run predict.py in order to predict on test images.
 - **--tta** number of TTA's
 - **--batch-size** batch size
 
-## Infer Pipeline
-* **Infer without Training:** First download the checkpoints from [here](https://www.kaggle.com/maxschfer/ocn-checkpoints) and place them on `./output` directory then run the following codes.
+### Inference Pipeline
+
+<img src="assets/inference_pipeline.png" alt="inference_pipeline" width="450"/>
+
+#### **Inference without Training:**
+First download the checkpoints from [here](https://www.kaggle.com/maxschfer/ocn-checkpoints) and place them on `./output` directory then run the following codes.
 ```
 !python predict.py --ensemble 1 --tta 1 --batch-size 8
 ```
 
-* **Infer after Training:** After training is done, run the following codes.
+#### **Inference after Training:**
+After training is done, run the following codes.
 ```
 !python predict.py --ensemble 1 --tta 1 --batch-size 8
 ```
@@ -116,11 +123,11 @@ Run predict.py in order to predict on test images.
 │   └── train_metadata.csv
 ...
 ├── output
-│    ├── Resnet34-Unet-512x512
+│    ├── resnet34-unet-512x512
 │    │   ├── resnet34-unet-512.yaml
 │    │   └── resnet34-unet.pt
-│    ├── EfficientNetB1-Unet-512x512
-│    └── Resnext50-Unet-512x512
+│    ├── efficientnet-b1-unet-512x512
+│    └── resnext50-unet-512x512
 ...
  
 ```
