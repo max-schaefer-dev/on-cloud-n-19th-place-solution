@@ -1,6 +1,6 @@
 # Approach
 
-<img src="assets/approach.PNG" alt="drawing" width="350"/>
+<img src="assets/approach.png" alt="approach" width="350"/>
 
 ## Data Cleaning process
 1. Data cleaning
