@@ -125,8 +125,9 @@ class CloudModel(pl.LightningModule):
             loss,
             on_step=False,
             on_epoch=True,
-            prog_bar=True,
+            prog_bar=False,
             logger=True,
+            batch_size=self.batch_size,
         )
 
         return loss
@@ -169,6 +170,7 @@ class CloudModel(pl.LightningModule):
             on_epoch=True,
             prog_bar=True,
             logger=True,
+            batch_size=self.batch_size,
         )
         # Forward pass & softmax
         preds = torch.softmax(preds, dim=1)[:, 1]
@@ -178,7 +180,13 @@ class CloudModel(pl.LightningModule):
         jaccardIndex = JaccardIndex(preds, y)
 
         self.log(
-            "jaccardIndex", jaccardIndex, on_step=False, on_epoch=True, prog_bar=True, logger=True
+            "jaccardIndex",
+            jaccardIndex,
+            on_step=False,
+            on_epoch=True,
+            prog_bar=True,
+            logger=True,
+            batch_size=self.batch_size,
         )
 
         return jaccardIndex

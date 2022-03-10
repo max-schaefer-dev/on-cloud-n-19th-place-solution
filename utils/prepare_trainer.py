@@ -12,6 +12,7 @@ def prepare_trainer(CFG):
     """
 
     limit_val_batches = 0 if CFG.all_data else 1.0
+    log_every_n_steps = 1 if CFG.fast_dev_run else 50
         
     trainer = pl.Trainer(
         gpus=1,
@@ -19,7 +20,8 @@ def prepare_trainer(CFG):
         callbacks=get_callbacks(CFG),
         max_epochs=CFG.epochs,
         limit_val_batches=limit_val_batches,
-        default_root_dir=CFG.output_dir
+        default_root_dir=CFG.output_dir,
+        log_every_n_steps=log_every_n_steps
     )
 
     return trainer
