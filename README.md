@@ -1,6 +1,15 @@
 # On-Cloud-N: Cloud Detection Challange
 
-!!! WORK IN PROGRESS !!!
+    !!! IMPORTANT !!!
+    * Work is still in progress
+    * Competition dataset not yet publicly available, but soon should be
+    * Make sure to to look at APPROACH.md for more details
+
+    * TO-DO:
+      * create run.ipynb
+      * create eda.ipynb
+      * add link to competition dataset as soon as it´s available
+
 
 ## Problem
 * Statement: Detect clouds cover in satellite imagery to remove cloud inference
@@ -51,12 +60,6 @@ First, the training and testing data should be downloaded from the competition w
 ...
 
 ```
-
-**prepare_data.py**
-- **--data-dir** directory for raw data (unprocessed images), default 'data/raw'
-- **--debug** uses only 100 images for processing if this mode id used
-- **--infer-only** generates images only for test 
-
 
 ### Training
 Run train.py to train final 3 models using appropriate arguments.
