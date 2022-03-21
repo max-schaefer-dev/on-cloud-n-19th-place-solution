@@ -169,4 +169,4 @@ if __name__ == '__main__':
 
     logger.info(f"""Saved {len(list(predictions_dir.glob("*.tif")))} predictions""")
 
-    save_prediction_as_jpg(df, predictions_dir)
+    save_prediction_as_jpg(predictions_dir)
