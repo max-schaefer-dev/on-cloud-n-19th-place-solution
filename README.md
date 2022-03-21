@@ -1,5 +1,7 @@
 # On-Cloud-N: Cloud Detection Challange
 
+<img src="assets/concept.png" alt="inference_pipeline" />
+
     !!! IMPORTANT !!!
     * Work is still in progress
     * Competition dataset not yet publicly available, but soon should be
