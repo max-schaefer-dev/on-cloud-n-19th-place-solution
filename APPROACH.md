@@ -20,6 +20,24 @@
   * Encoder: resnet34, resnet50, resnet101, efficientnet-b4, xception, se_resnet50
   * Decoder: unet, FPN
 
+## Loss function
+* Used in final models:
+  * Cross-Entropy Loss
+* Tried out:
+  * Binary Crossentropy Loss (worse performance)
+
+## Optimizer
+* Used in final models:
+  * Adam
+* Tried out:
+  * Rectified Adam (worse performance)
+
+## Learning Rate Scheduler: 
+* Cosine Annealing LR
+
+## Metric
+* JaccardIndex (IOU)
+
 ## Augmentations
 * Used in final models:
   * Horizontal flip, vertical flip
