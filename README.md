@@ -1,6 +1,6 @@
 # On-Cloud-N: Cloud Detection Challange
 
-<img src="assets/concept.png" alt="inference_pipeline" />
+<img src="assets/concept.PNG" alt="inference_pipeline" />
 
     !!! IMPORTANT !!!
     * Work is still in progress
