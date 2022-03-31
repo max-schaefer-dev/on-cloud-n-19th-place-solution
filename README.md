@@ -8,7 +8,6 @@
     * Make sure to to look at APPROACH.md for more details
 
     * TO-DO:
-      * create eda.ipynb
       * add link to competition dataset as soon as it´s available
 
 
