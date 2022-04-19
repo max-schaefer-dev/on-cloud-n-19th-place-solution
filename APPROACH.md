@@ -38,6 +38,11 @@
 ## Metric
 * JaccardIndex (IOU)
 
+$$
+\displaystyle
+J(A,B)=\frac{|A \cap B|}{|A \cup B|}
+$$
+
 ## Augmentations
 * Used in final models:
   * Horizontal flip, vertical flip

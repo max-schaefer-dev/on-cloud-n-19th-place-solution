@@ -1,14 +1,19 @@
 # On-Cloud-N: Cloud Detection Challange
 
-<img src="assets/concept.PNG" alt="inference_pipeline" />
+<img src="assets/pipeline.png" alt="pipeline/concept" />
 
-    !!! IMPORTANT !!!
-    * Work is still in progress
-    * Competition dataset not yet publicly available, but soon should be
-    * Make sure to to look at APPROACH.md for more details
+## Info
 
-    * TO-DO:
-      * add link to competition dataset as soon as it´s available
+* Competition dataset not yet publicly available, but soon should be
+* Make sure to to look at APPROACH.md for more details
+* Model weights available at:
+  * model 1: [Resnet34-Unet-512-512.pt](https://drive.google.com/file/d/1uXuxV0j_9cI5oXcSw1mH1mSoPU6SWrYA/view?usp=sharing)
+  * model 2: [EfficientNetB1-Unet-512-512.pt](https://drive.google.com/file/d/1OBesw6cZOZcop-p1X0LHKqdEQy2sYc5n/view?usp=sharing)
+  * model 3: [Resnext50-Unet-512-512.pt](https://drive.google.com/file/d/15mL8c9OBPk2JIcPb0k6t_NMtH-mKeVWE/view?usp=sharing)
+
+
+* TO-DO:
+  * add link to competition dataset as soon as it´s available
 
 
 ## Problem
