@@ -67,8 +67,7 @@ First, the training and testing data should be downloaded from the competition w
 ```
 
 ### Training
-Run train.py to train final 3 models using appropriate arguments.
-**train.py**
+Run train.py to train final 3 models using appropriate arguments.  
 - **--cfg** config file path
 - **--fast-dev-run** trains only with 1 batch of the entire files
 - **--model-name** name of the model
@@ -102,14 +101,13 @@ Run predict.py in order to predict on test images.
 - **--bands** bands used in model
 - **--output-dir** output folder to to save generated .tif files
 - **--tta** number of TTA's
-- **--batch-size** batch size
 
 ### Inference Pipeline
 
 <img src="assets/inference_pipeline.png" alt="inference_pipeline" width="450"/>
 
 #### **Inference without Training:**
-First download the checkpoints from [here](https://www.kaggle.com/maxschfer/ocn-checkpoints) and place them on `./output` directory then run the following codes.
+First download the checkpoints mentioned in the info section above and place them on `./output` directory then run the following codes.
 ```
 !python predict.py --ensemble 1 --tta 1 --batch-size 8
 ```
