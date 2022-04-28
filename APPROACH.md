@@ -36,7 +36,7 @@
 * Cosine Annealing LR
 
 ## Metric
-* JaccardIndex (IOU)
+* JaccardIndex (IOU)  
 <img src="https://render.githubusercontent.com/render/math?math=$J(A,B)=\frac{|A \cap B|}{|A \cup B|}$">
 
 ## Augmentations

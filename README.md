@@ -3,17 +3,15 @@
 <img src="assets/pipeline.png" alt="pipeline/concept" />
 
 ## Info
-
-* Competition dataset not yet publicly available, but soon should be
-* Make sure to to look at APPROACH.md for more details
+* Last update: 28.04.2022
+* Online-Demo: [Cloud Model Demo Repo](https://github.com/max-schaefer-dev/cloud-detection-demo)
+* Make sure to to look at <code>APPROACH.md</code> for more details
 * Model weights available at:
-  * model 1: [Resnet34-Unet-512-512.pt](https://drive.google.com/file/d/1uXuxV0j_9cI5oXcSw1mH1mSoPU6SWrYA/view?usp=sharing)
-  * model 2: [EfficientNetB1-Unet-512-512.pt](https://drive.google.com/file/d/1OBesw6cZOZcop-p1X0LHKqdEQy2sYc5n/view?usp=sharing)
-  * model 3: [Resnext50-Unet-512-512.pt](https://drive.google.com/file/d/15mL8c9OBPk2JIcPb0k6t_NMtH-mKeVWE/view?usp=sharing)
-
-
-* TO-DO:
-  * add link to competition dataset as soon as it´s available
+  * Model 1: [Resnet34-Unet-512-512.pt](https://drive.google.com/file/d/1uXuxV0j_9cI5oXcSw1mH1mSoPU6SWrYA/view?usp=sharing)
+  * Model 2: [EfficientNetB1-Unet-512-512.pt](https://drive.google.com/file/d/1OBesw6cZOZcop-p1X0LHKqdEQy2sYc5n/view?usp=sharing)
+  * Model 3: [Resnext50-Unet-512-512.pt](https://drive.google.com/file/d/15mL8c9OBPk2JIcPb0k6t_NMtH-mKeVWE/view?usp=sharing)
+* To-Do:
+  * add modules to download competition data automatically
 
 
 ## Problem
@@ -90,6 +88,8 @@ Run train.py to train final 3 models using appropriate arguments.
 ```
 
 ## Prediction
+<img src="assets/inference_pipeline.png" alt="inference_pipeline" width="450"/>
+
 Run predict.py in order to predict on test images.
 
 ### predict.py
@@ -101,10 +101,6 @@ Run predict.py in order to predict on test images.
 - **--bands** bands used in model
 - **--output-dir** output folder to to save generated .tif files
 - **--tta** number of TTA's
-
-### Inference Pipeline
-
-<img src="assets/inference_pipeline.png" alt="inference_pipeline" width="450"/>
 
 #### **Inference without Training:**
 First download the checkpoints mentioned in the info section above and place them on `./output` directory then run the following codes.
