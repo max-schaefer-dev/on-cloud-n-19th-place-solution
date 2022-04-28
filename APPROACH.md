@@ -37,11 +37,7 @@
 
 ## Metric
 * JaccardIndex (IOU)
-
-$$
-\displaystyle
-J(A,B)=\frac{|A \cap B|}{|A \cup B|}
-$$
+<img src="https://render.githubusercontent.com/render/math?math=$J(A,B)=\frac{|A \cap B|}{|A \cup B|}$">
 
 ## Augmentations
 * Used in final models:
