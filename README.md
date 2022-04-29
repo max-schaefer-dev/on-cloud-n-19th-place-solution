@@ -3,15 +3,15 @@
 <img src="assets/pipeline.png" alt="pipeline/concept" />
 
 ## Info
-* Last update: 28.04.2022
+* Last update: 29.04.2022
+  * competition data is now available online: [ML Hub](https://mlhub.earth/data/ref_cloud_cover_detection_challenge_v1)
+  * added download_competition_data script to run.ipynb
 * Online-Demo: [Cloud Model Demo Repo](https://github.com/max-schaefer-dev/cloud-detection-demo)
 * Make sure to to look at <code>APPROACH.md</code> for more details
 * Model weights available at:
   * Model 1: [Resnet34-Unet-512-512.pt](https://drive.google.com/file/d/1uXuxV0j_9cI5oXcSw1mH1mSoPU6SWrYA/view?usp=sharing)
   * Model 2: [EfficientNetB1-Unet-512-512.pt](https://drive.google.com/file/d/1OBesw6cZOZcop-p1X0LHKqdEQy2sYc5n/view?usp=sharing)
   * Model 3: [Resnext50-Unet-512-512.pt](https://drive.google.com/file/d/15mL8c9OBPk2JIcPb0k6t_NMtH-mKeVWE/view?usp=sharing)
-* To-Do:
-  * add modules to download competition data automatically
 
 
 ## Problem
